@@ -16,14 +16,15 @@
     <ul id="messages"></ul>
 
     <script>
-        var socket = io.connect("https://web-sockets-5ueu.onrender.com");
+        var socket = io("https://web-sockets-5ueu.onrender.com", { transports: ["websocket"] });
 
         // Listen for messages from the server
-        socket.on("message", function(msg) {
+        socket.on("message", function (msg) {
             let li = document.createElement("li");
-            li.innerText = msg;
+            li.innerHTML = `<strong>[${msg.timestamp}] ${msg.username}:</strong> ${msg.message}`;
             document.getElementById("messages").appendChild(li);
         });
+
 
         // Function to send messages
         function sendMessage() {
