@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask WebSocket Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h2>Real-time Chat</h2>
+    
+    <input id="username" type="text" placeholder="Enter your name">
+    <input id="message" type="text" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+
+    <ul id="messages"></ul>
+
+    <script>
+        var socket = io.connect("http://127.0.0.1:5000");
+
+        // Listen for messages from the server
+        socket.on("message", function(msg) {
+            let li = document.createElement("li");
+            li.innerText = msg;
+            document.getElementById("messages").appendChild(li);
+        });
+
+        // Function to send messages
+        function sendMessage() {
+            let username = document.getElementById("username").value;
+            let message = document.getElementById("message").value;
+            
+            if (username === "" || message === "") {
+                alert("Enter both username and message!");
+                return;
+            }
+
+            let fullMessage = username + ": " + message;
+            socket.send(fullMessage);  // Send message to the server
+            document.getElementById("message").value = ""; // Clear input
+        }
+    </script>
+</body>
+</html>
