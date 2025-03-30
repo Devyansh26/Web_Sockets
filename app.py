@@ -1,21 +1,24 @@
+import eventlet
+eventlet.monkey_patch()  # ✅ Must be the first import
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 
-# Initialize SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*")
+# Initialize Flask-SocketIO with eventlet
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # Loads the chat UI
+    return render_template('index.html')
 
-# Handle messages from any user
 @socketio.on('message')
 def handle_message(msg):
     print(f'Received message: {msg}')
-    send(msg, broadcast=True)  # Send the message to ALL connected clients
+    send(msg, broadcast=True)  # Send message to all connected clients
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    # Use eventlet WSGI server
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
